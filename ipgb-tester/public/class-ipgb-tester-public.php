@@ -53,8 +53,9 @@ class IPGB_Tester_Public {
 		$this->version = $version;
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_action( 'wp_ajax_ipgb-tester',        array( $this, 'ajax_hander_public' ) );
-			add_action( 'wp_ajax_nopriv_ipgb-tester', array( $this, 'ajax_hander_public' ) );
+			$action = $this->get_ajax_action();
+			add_action( 'wp_ajax_'        . $action, array( $this, 'ajax_hander_public' ) );
+			add_action( 'wp_ajax_nopriv_' . $action, array( $this, 'ajax_hander_public' ) );
 		}
 
 	}
@@ -104,12 +105,22 @@ class IPGB_Tester_Public {
 		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ipgb-tester-public.js', array( 'jquery' ), $this->version, false );
 		wp_localize_script( $this->plugin_name, 'IPGB_TESTER', array(
 			'url' => admin_url() . 'admin-ajax.php',
-			'action' => 'ipgb-tester',
+			'action' => $this->get_ajax_action(),
 		) );
 		wp_enqueue_script( $this->plugin_name );
 
 	}
 
+	/**
+	 * Ajax action name on public facing pages.
+	 *
+	 * @since    1.0.0
+	 */
+	private function get_ajax_action() {
+
+		return 'ipgb-tester-admin-ajax';
+
+	}
 
 	/**
 	 * Ajax handler on public facing pages.

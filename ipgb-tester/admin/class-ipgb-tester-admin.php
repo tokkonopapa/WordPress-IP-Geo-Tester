@@ -100,4 +100,39 @@ class IPGB_Tester_Admin {
 
 	}
 
+	/**
+	 * Ajax action name on public facing pages.
+	 *
+	 * @since    1.0.0
+	 */
+	private function get_post_action() {
+
+		return 'ipgb-tester-admin-post';
+
+	}
+
+	/**
+	 * Initialize for the admin area.
+	 *
+	 * @since    1.0.0
+	 */
+	public function admin_init() {
+
+		$action = $this->get_post_action();
+		add_filter( 'admin_post_'        . $action, array( $this, 'admin_post' ) );
+		add_filter( 'admin_post_nopriv_' . $action, array( $this, 'admin_post' ) );
+
+	}
+
+	/**
+	 * Handler of admin post.
+	 *
+	 * @since    1.0.0
+	 */
+	public function admin_post() {
+
+		wp_send_json( NULL, 200 ); // @since 3.5.0
+
+	}
+
 }
