@@ -154,6 +154,7 @@ class IPGB_Tester {
 
 		$plugin_admin = new IPGB_Tester_Admin( $this->get_plugin_name(), $this->get_version() );
 
+		// Register the scripts and stylesheets for the admin area.
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
