@@ -14,7 +14,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       IPGB Tester
- * Plugin URI:        https://github.com/tokkonopapa/WordPress-IP-Geo-Block
+ * Plugin URI:        https://github.com/tokkonopapa/WordPress-IP-Geo-Tester
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.0
  * Author:            tokkonopapa
@@ -26,18 +26,19 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
-}
+defined( 'WPINC' ) or die;
 
-define( 'IPGB_TESTER_BASE_PATH', plugin_dir_path( __FILE__ ) ); // @since 2.8
+// Slug, path, base
+define( 'IPGB_TESTER_SLUG', 'ipgb-tester' );
+define( 'IPGB_TESTER_PATH', plugin_dir_path( __FILE__ ) ); // @since 2.8
+define( 'IPGB_TESTER_BASE', plugin_basename( __FILE__ ) ); // @since 1.5
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-ipgb-tester-activator.php
  */
 function activate_IPGB_Tester() {
-	require_once IPGB_TESTER_BASE_PATH . 'includes/class-ipgb-tester-activator.php';
+	require_once IPGB_TESTER_PATH . 'includes/class-ipgb-tester-activator.php';
 	IPGB_Tester_Activator::activate();
 }
 
@@ -46,7 +47,7 @@ function activate_IPGB_Tester() {
  * This action is documented in includes/class-ipgb-tester-deactivator.php
  */
 function deactivate_IPGB_Tester() {
-	require_once IPGB_TESTER_BASE_PATH . 'includes/class-ipgb-tester-deactivator.php';
+	require_once IPGB_TESTER_PATH . 'includes/class-ipgb-tester-deactivator.php';
 	IPGB_Tester_Deactivator::deactivate();
 }
 
@@ -57,7 +58,7 @@ register_deactivation_hook( __FILE__, 'deactivate_IPGB_Tester' );
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require IPGB_TESTER_BASE_PATH . 'includes/class-ipgb-tester.php';
+require IPGB_TESTER_PATH . 'includes/class-ipgb-tester.php';
 
 /**
  * Begins execution of the plugin.

@@ -48,13 +48,11 @@ class IPGB_Tester_Admin {
 	 * @param      string    $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
 		// Add the options page and menu item.
 		add_action( 'admin_menu', array( $this, 'setup_admin_page' ) );
-
 	}
 
 	/**
@@ -63,9 +61,7 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/ipgb-tester-admin.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -74,9 +70,7 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ipgb-tester-admin.js', array( 'jquery' ), $this->version, false );
-
 	}
 
 	/**
@@ -93,9 +87,7 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	private function get_post_action() {
-
-		return 'ipgb-tester-admin-post';
-
+		return IPGB_TESTER_SLUG . '-admin-post';
 	}
 
 	/**
@@ -104,11 +96,9 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function admin_init() {
-
 		$action = $this->get_post_action();
 		add_filter( 'admin_post_'        . $action, array( $this, 'admin_post' ) );
 		add_filter( 'admin_post_nopriv_' . $action, array( $this, 'admin_post' ) );
-
 	}
 
 	/**
@@ -117,9 +107,36 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function admin_post() {
-
 		wp_send_json( NULL, 200 ); // @since 3.5.0
+	}
 
+	/**
+	 * Add plugin meta links
+	 *
+	 */
+	public function add_plugin_meta_links( $links, $file ) {
+		if ( $file === IPGB_TESTER_BASE ) {
+			$title = __( 'Contribute at GitHub', 'ip-geo-block' );
+			array_push(
+				$links,
+				"<a href=\"http://www.ipgeoblock.com\" title=\"$title\" target=_blank>$title</a>"
+			);
+		}
+
+		return $links;
+	}
+
+	/**
+	 * Add settings action link to the plugins page.
+	 *
+	 */
+	public function add_action_links( $links ) {
+		return array_merge(
+			array(
+				'settings' => '<a href="' . esc_url( admin_url( 'options-general.php?page=' . IPGB_TESTER_SLUG ) ) . '">' . __( 'Settings' ) . '</a>'
+			),
+			$links
+		);
 	}
 
 	/**
@@ -128,13 +145,15 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function setup_admin_page() {
+		add_filter( 'plugin_row_meta',                         array( $this, 'add_plugin_meta_links' ), 10, 2 );
+		add_filter( 'plugin_action_links_' . IPGB_TESTER_BASE, array( $this, 'add_action_links'      ), 10, 1 );
 
 		// Add a settings page for this plugin to the Settings menu.
 		$hook = add_options_page(
-			__( 'IP Geo Tester', 'ip-geo-tester' ),
-			__( 'IP Geo Tester', 'ip-geo-tester' ),
+			__( 'IPGB Tester', 'ipgb-tester' ),
+			__( 'IPGB Tester', 'ipgb-tester' ),
 			'manage_options',
-			'ip-geo-tester',
+			IPGB_TESTER_SLUG,
 			array( $this, 'render_admin_page' )
 		);
  
@@ -142,7 +161,6 @@ class IPGB_Tester_Admin {
 		if ( ! empty( $hook ) ) {
 			add_action( "load-$hook", array( $this, 'enqueue_admin_assets' ) );
 		}
-
 	}
 
 	/**
@@ -151,13 +169,11 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function render_field( $args ) {
-
 		switch ( $args['type'] ) {
 		  case 'html':
 			echo "\n", $args['value'], "\n"; // must be sanitized at caller
 			break;
 		}
-
 	}
 
 	/**
@@ -166,9 +182,7 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function sanitize_options( $options ) {
-
-        return $options;
-
+		return $options;
 	}
 
 	/**
@@ -176,53 +190,41 @@ class IPGB_Tester_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	private function register_admin_items() {
-
+	private function register_page_items() {
 		register_setting(
-			$option_slug = 'ip-geo-tester',
-			$option_name = 'ip-geo-tester-options',
+			$option_slug = IPGB_TESTER_SLUG,
+			$option_name = IPGB_TESTER_SLUG . '-options',
 			array( $this, 'sanitize_options' )
 		);
 
-		$section = $option_slug . '-section1';
-
 		add_settings_section(
-			$section,
-			__( 'Anchor tag test', 'ip-geo-tester' ),
+			$section = $option_slug . '-section1',
+			__( 'Test for anchor tag', 'ip-geo-tester' ),
 			NULL,
 			$option_slug
 		);
 
-		$field = 'test1';
-		add_settings_field(
-			$option_name . '-' . $field,
-			'Test 1',
-			array( $this, 'render_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type'   => 'html',
-				'option' => $option_name,
-				'field'  => $field,
-				'value'  => '<a class="button button-secondary" onclick="alert(1)">Link with onclick without href</a>',
-			)
+		$test = array(
+			'<a                       class="button button-secondary" onClick="alert(1)">onclick="..."</a>',
+			'<a href=""               class="button button-secondary" onClick="alert(1)">href=""  onClick="..."</a>',
+			'<a href="?"              class="button button-secondary" onClick="alert(1)">href="?" onClick="..."</a>',
+			'<a href="#"              class="button button-secondary" onClick="alert(1)">href="#" onClick="..."</a>',
+			'<a href="//example.com/" class="button button-secondary" onClick="wondow.location=this.href">href="//:example.com/" onclick="..."</a>',
 		);
 
-		$field = 'test2';
-		add_settings_field(
-			$option_name . '-' . $field,
-			'Test 2',
-			array( $this, 'render_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type'   => 'html',
-				'option' => $option_name,
-				'field'  => $field,
-				'value'  => '<a href="//example.com/" class="button button-secondary" onclick="wondow.location = this.href">Link with onclick to external</a>',
-			)
-		);
-
+		foreach ( $test as $key => $val ) {
+			add_settings_field(
+				$option_name . '-' . ( $field = 'test' . (string)($key + 1) ),
+				(string)($key + 1),
+				array( $this, 'render_field' ),
+				$option_slug,
+				$section,
+				array(
+					'type'   => 'html',
+					'value'  => $test[ $key ],
+				)
+			);
+		}
 	}
 
 	/**
@@ -231,21 +233,19 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function render_admin_page() {
-
-		$this->register_admin_items();
+		$this->register_page_items();
 ?>
 <div class="wrap">
 	<h2>IP Geo Tester</h2>
 	<form method="post" action="<?php echo 'option-general.php'; ?>">
 <?php
-		settings_fields( 'ip-geo-tester' );
-		do_settings_sections( 'ip-geo-tester' );
+		settings_fields( IPGB_TESTER_SLUG );
+		do_settings_sections( IPGB_TESTER_SLUG );
 //		submit_button(); // @since 3.1
 ?>
 	</form>
 </div>
 <?php
-
 	}
-    
+
 }

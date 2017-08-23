@@ -103,19 +103,19 @@ class IPGB_Tester {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once IPGB_TESTER_BASE_PATH . 'includes/class-ipgb-tester-loader.php';
+		require_once IPGB_TESTER_PATH . 'includes/class-ipgb-tester-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once IPGB_TESTER_BASE_PATH . 'includes/class-ipgb-tester-i18n.php';
+		require_once IPGB_TESTER_PATH . 'includes/class-ipgb-tester-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once IPGB_TESTER_BASE_PATH . 'public/class-ipgb-tester-public.php';
+		require_once IPGB_TESTER_PATH . 'public/class-ipgb-tester-public.php';
 
 		$this->loader = new IPGB_Tester_Loader();
 
@@ -150,7 +150,7 @@ class IPGB_Tester {
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once IPGB_TESTER_BASE_PATH . 'admin/class-ipgb-tester-admin.php';
+		require_once IPGB_TESTER_PATH . 'admin/class-ipgb-tester-admin.php';
 
 		$plugin_admin = new IPGB_Tester_Admin( $this->get_plugin_name(), $this->get_version() );
 
