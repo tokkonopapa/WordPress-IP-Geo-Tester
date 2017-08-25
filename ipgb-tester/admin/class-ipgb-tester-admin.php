@@ -205,11 +205,12 @@ class IPGB_Tester_Admin {
 		);
 
 		$test = array(
-			'<a                       class="button button-secondary" onClick="alert(1)">onclick="..."</a>',
-			'<a href=""               class="button button-secondary" onClick="alert(1)">href=""  onClick="..."</a>',
-			'<a href="?"              class="button button-secondary" onClick="alert(1)">href="?" onClick="..."</a>',
-			'<a href="#"              class="button button-secondary" onClick="alert(1)">href="#" onClick="..."</a>',
-			'<a href="//example.com/" class="button button-secondary" onClick="wondow.location=this.href">href="//:example.com/" onclick="..."</a>',
+			'<a                            class="button button-secondary" onClick="alert(1)">onclick="..."</a>',
+			'<a href=""                    class="button button-secondary" onClick="alert(1)">href=""  onClick="..."</a>',
+			'<a href="?"                   class="button button-secondary" onClick="alert(1)">href="?" onClick="..."</a>',
+			'<a href="#"                   class="button button-secondary" onClick="alert(1)">href="#" onClick="..."</a>',
+			'<a href="javascript:alert(2)" class="button button-secondary" onClick="alert(1)">href="javascript:..." onClick="..."</a>',
+			'<a href="//example.com/"      class="button button-secondary" onClick="wondow.location=this.href">href="//:example.com/" onclick="..."</a>',
 		);
 
 		foreach ( $test as $key => $val ) {
