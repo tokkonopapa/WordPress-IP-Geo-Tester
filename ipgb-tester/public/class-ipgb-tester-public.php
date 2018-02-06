@@ -52,10 +52,28 @@ class IPGB_Tester_Public {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
+		// Initialize something.
+		add_action( 'init', array( $this, 'plugin_init' ) );
+
+	}
+
+	/**
+	 * Initialize for the public area.
+	 *
+	 * @since    1.0.0
+	 */
+	public function plugin_init() {
+
+		// Examples of short code
+		// [ipgb-tester type="1" priv="true" ] for admin dashboard
+		// [ipgb-tester type="1" priv="false"] for public facing pages
+		add_shortcode( IPGB_TESTER_SLUG, array( $this, 'process_shortcode' ) );
+
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			$action = $this->get_ajax_action();
-			add_action( 'wp_ajax_'        . $action, array( $this, 'ajax_hander_public' ) );
-			add_action( 'wp_ajax_nopriv_' . $action, array( $this, 'ajax_hander_public' ) );
+			add_action( 'wp_ajax_'        . $action,             array( $this, 'ajax_hander_public' ) );
+			add_action( 'wp_ajax_'        . $action . '-nopriv', array( $this, 'ajax_hander_public' ) );
+			add_action( 'wp_ajax_nopriv_' . $action . '-nopriv', array( $this, 'ajax_hander_public' ) );
 		}
 
 	}
@@ -135,6 +153,22 @@ class IPGB_Tester_Public {
 
 		wp_send_json( NULL, 200 ); // @since 3.5.0
 
+	}
+
+	/**
+	 * Handler of short code.
+	 *
+	 * @since    1.0.0
+	 */
+	public function process_shortcode( $atts ) {debug_log($atts);
+		$atts = shortcode_atts( array(
+			'type' => 0,
+			'priv' => 'true',
+		), $atts );
+
+		$act = $this->get_ajax_action() . ( 'true' === $atts['priv'] ? '' : '-nopriv' );
+		$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
+		return '<a href="' . $url . '" title="' . $url . '">' . $url . '</a>';
 	}
 
 }

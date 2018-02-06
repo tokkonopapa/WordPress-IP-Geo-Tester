@@ -51,6 +51,9 @@ class IPGB_Tester_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
+		// Initialize something.
+		add_action( 'init', array( $this, 'admin_init' ) );
+
 		// Add the options page and menu item.
 		add_action( 'admin_menu', array( $this, 'setup_admin_page' ) );
 	}
@@ -86,8 +89,8 @@ class IPGB_Tester_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	private function get_post_action() {
-		return IPGB_TESTER_SLUG . '-admin-post';
+	private function get_admin_action( $type ) {
+		return implode( '-', array_merge( array( IPGB_TESTER_SLUG ), is_array( $type ) ? $type : array( $type ) ) );
 	}
 
 	/**
@@ -96,9 +99,12 @@ class IPGB_Tester_Admin {
 	 * @since    1.0.0
 	 */
 	public function admin_init() {
-		$action = $this->get_post_action();
-		add_filter( 'admin_post_'        . $action, array( $this, 'admin_post' ) );
-		add_filter( 'admin_post_nopriv_' . $action, array( $this, 'admin_post' ) );
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			$action = $this->get_admin_action( array( 'admin', 'post' ) );
+			add_filter( 'admin_post_'        . $action,             array( $this, 'admin_post' ) );
+			add_filter( 'admin_post_'        . $action . '-nopriv', array( $this, 'admin_post' ) );
+			add_filter( 'admin_post_nopriv_' . $action . '-nopriv', array( $this, 'admin_post' ) );
+		}
 	}
 
 	/**
@@ -210,7 +216,7 @@ class IPGB_Tester_Admin {
 			'<a href="?"                   class="button button-secondary" onClick="alert(1)">href="?" onClick="..."</a>',
 			'<a href="#"                   class="button button-secondary" onClick="alert(1)">href="#" onClick="..."</a>',
 			'<a href="javascript:alert(2)" class="button button-secondary" onClick="alert(1)">href="javascript:..." onClick="..."</a>',
-			'<a href="//example.com/"      class="button button-secondary" onClick="wondow.location=this.href">href="//:example.com/" onclick="..."</a>',
+			'<a href="//example.com/"      class="button button-secondary" onClick="window.location=this.href">href="//:example.com/" onclick="..."</a>',
 		);
 
 		foreach ( $test as $key => $val ) {
