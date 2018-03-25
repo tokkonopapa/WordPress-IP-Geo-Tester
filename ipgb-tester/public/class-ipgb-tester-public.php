@@ -160,15 +160,33 @@ class IPGB_Tester_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function process_shortcode( $atts ) {debug_log($atts);
+	public function process_shortcode( $atts ) {
 		$atts = shortcode_atts( array(
 			'type' => 0,
 			'priv' => 'true',
 		), $atts );
 
-		$act = $this->get_ajax_action() . ( 'true' === $atts['priv'] ? '' : '-nopriv' );
-		$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
-		return '<a href="' . $url . '" title="' . $url . '">' . $url . '</a>';
+		switch ( $atts['type'] ) {
+		  case 0:
+			$act = $this->get_ajax_action() . ( 'true' === $atts['priv'] ? '' : '-nopriv' );
+			$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
+			return '<a href="' . $url . '" title="' . $url . '">' . $url . '</a>';
+			break;
+		  case 1:
+			$home = esc_url( site_url() );
+			$link = <<<EOT
+<ol>
+    <li><a href="${home}/wp-admin/admin-ajax.php?action=my-ajax">/wp-admin/admin-ajax-php?action=my-ajax</a>
+    <li><a href="${home}/wp-admin/admin-ajax.php?action=my-ajax&file=../../../wp-config.php">/wp-admin/admin-ajax-php?action=my-ajax&file=../../../wp-config.php</a></li>
+    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php">/wp-content/plugins/ip-geo-block/samples.php</a></li>
+    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php?file=../../../wp-config.php">/wp-content/plugins/ip-geo-block/samples.php?file=../../../wp-config.php</a></li>
+    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php?wp-load=1">/wp-content/plugins/ip-geo-block/samples.php?wp-load=1</a></li>
+    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php?wp-load=1&file=../../../wp-config.php">/wp-content/plugins/ip-geo-block/samples.php?wp-load=1&file=../../../wp-config.php</a></li>
+</ol>
+EOT;
+			return $link;
+			break;
+		}
 	}
 
 }

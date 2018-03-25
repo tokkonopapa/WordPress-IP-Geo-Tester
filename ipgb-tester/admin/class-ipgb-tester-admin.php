@@ -205,33 +205,62 @@ class IPGB_Tester_Admin {
 
 		add_settings_section(
 			$section = $option_slug . '-section1',
-			__( 'Test for anchor tag', 'ip-geo-tester' ),
+			__( 'Test of click event', 'ip-geo-tester' ),
 			NULL,
 			$option_slug
 		);
 
-		$test = array(
-			'<a                            class="button button-secondary" onClick="alert(1)">onclick="..."</a>',
-			'<a href=""                    class="button button-secondary" onClick="alert(1)">href=""  onClick="..."</a>',
-			'<a href="?"                   class="button button-secondary" onClick="alert(1)">href="?" onClick="..."</a>',
-			'<a href="#"                   class="button button-secondary" onClick="alert(1)">href="#" onClick="..."</a>',
-			'<a href="javascript:alert(2)" class="button button-secondary" onClick="alert(1)">href="javascript:..." onClick="..."</a>',
-			'<a href="//example.com/"      class="button button-secondary" onClick="window.location=this.href">href="//:example.com/" onclick="..."</a>',
+		$link = array(
+			'<a                            class="button button-secondary" onClick="alert(1)">&lt;a onclick="&ctdot;"&gt;</a>',
+			'<a href=""                    class="button button-secondary" onClick="alert(1)">&lt;a href=""  onClick="&ctdot;"&gt;</a>',
+			'<a href="?"                   class="button button-secondary" onClick="alert(1)">&lt;a href="?" onClick="&ctdot;"&gt;</a>',
+			'<a href="#"                   class="button button-secondary" onClick="alert(1)">&lt;a href="#" onClick="&ctdot;"&gt;</a>',
+			'<a href="javascript:alert(2)" class="button button-secondary" onClick="alert(1)">&lt;a href="javascript:&ctdot;" onClick="&ctdot;"&gt;</a>',
+			'<a href="//example.com/"      class="button button-secondary">&lt;a href="//:example.com/"&gt;</a>',
+			'<a href="//example.com/"      class="button button-secondary" onClick="return window.confirm(\'Ready?\')">&lt;a href="//:example.com/" onClick="&ctdot;"&gt;</a>',
+		);
+		$form = array(
+			'<form method="GET"  action=""><input class="button button-secondary" value="&lt;form method=&quot;GET&quot;  action=&quot;&quot;&gt;" type="submit" /></form>',
+			'<form method="POST" action=""><input class="button button-secondary" value="&lt;form method=&quot;POST&quot; action=&quot;&quot;&gt;" type="submit" /></form>',
+			'<form method="GET">           <input class="button button-secondary" value="&lt;form method=&quot;GET&quot;&gt;"                      type="submit" /></form>',
+			'<form method="POST">          <input class="button button-secondary" value="&lt;form method=&quot;POST&quot;&gt;"                     type="submit" /></form>',
 		);
 
-		foreach ( $test as $key => $val ) {
-			add_settings_field(
-				$option_name . '-' . ( $field = 'test' . (string)($key + 1) ),
-				(string)($key + 1),
-				array( $this, 'render_field' ),
-				$option_slug,
-				$section,
-				array(
-					'type'   => 'html',
-					'value'  => $test[ $key ],
-				)
-			);
+		$pattern = '<ol>';
+		foreach ( $link as $val ) {
+			$pattern .= '<li>' . $val . '</li>';
 		}
+		$pattern .= '</ol>';
+
+		add_settings_field(
+			$option_name . '-link',
+			'Anchor tag',
+			array( $this, 'render_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type'   => 'html',
+				'value'  => $pattern,
+			)
+		);
+
+		$pattern = '<ol>';
+		foreach ( $form as $val ) {
+			$pattern .= '<li>' . $val . '</li>';
+		}
+		$pattern .= '</ol>';
+
+		add_settings_field(
+			$option_name . '-form',
+			'Form tag',
+			array( $this, 'render_field' ),
+			$option_slug,
+			$section,
+			array(
+				'type'   => 'html',
+				'value'  => $pattern,
+			)
+		);
 	}
 
 	/**
@@ -244,13 +273,13 @@ class IPGB_Tester_Admin {
 ?>
 <div class="wrap">
 	<h2>IP Geo Tester</h2>
-	<form method="post" action="<?php echo 'option-general.php'; ?>">
+	<!--<form method="post" action="<?php echo 'options-general.php'; ?>">-->
 <?php
 		settings_fields( IPGB_TESTER_SLUG );
 		do_settings_sections( IPGB_TESTER_SLUG );
 //		submit_button(); // @since 3.1
 ?>
-	</form>
+	<!--</form>-->
 </div>
 <?php
 	}
