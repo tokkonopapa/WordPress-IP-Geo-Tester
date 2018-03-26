@@ -65,8 +65,8 @@ class IPGB_Tester_Public {
 	public function plugin_init() {
 
 		// Examples of short code
-		// [ipgb-tester type="1" priv="true" ] for admin dashboard
-		// [ipgb-tester type="1" priv="false"] for public facing pages
+		// [ipgb-tester type="1" nopriv="true" ] for public facing pages
+		// [ipgb-tester type="1" nopriv="false"] for admin dashboard
 		add_shortcode( IPGB_TESTER_SLUG, array( $this, 'process_shortcode' ) );
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
@@ -123,7 +123,7 @@ class IPGB_Tester_Public {
 		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ipgb-tester-public.js', array( 'jquery' ), $this->version, false );
 		wp_localize_script( $this->plugin_name, 'IPGB_TESTER', array(
 			'url' => admin_url() . 'admin-ajax.php',
-			'action' => $this->get_ajax_action(),
+			'action' => $this->get_ajax_action( TRUE ),
 		) );
 		wp_enqueue_script( $this->plugin_name );
 
@@ -134,9 +134,9 @@ class IPGB_Tester_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	private function get_ajax_action() {
+	private function get_ajax_action( $nopriv = FALSE ) {
 
-		return 'ipgb-tester-admin-ajax';
+		return 'ipgb-tester-admin-ajax' . ($nopriv ? '-nopriv' : '');
 
 	}
 
@@ -163,12 +163,12 @@ class IPGB_Tester_Public {
 	public function process_shortcode( $atts ) {
 		$atts = shortcode_atts( array(
 			'type' => 0,
-			'priv' => 'true',
+			'nopriv' => 'true',
 		), $atts );
 
 		switch ( $atts['type'] ) {
 		  case 0:
-			$act = $this->get_ajax_action() . ( 'true' === $atts['priv'] ? '' : '-nopriv' );
+			$act = $this->get_ajax_action( 'true' === $atts['nopriv'] );
 			$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
 			return '<a href="' . $url . '" title="' . $url . '">' . $url . '</a>';
 			break;
