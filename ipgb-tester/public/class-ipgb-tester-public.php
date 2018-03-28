@@ -65,8 +65,8 @@ class IPGB_Tester_Public {
 	public function plugin_init() {
 
 		// Examples of short code
-		// [ipgb-tester type="1" nopriv="true" ] for public facing pages
-		// [ipgb-tester type="1" nopriv="false"] for admin dashboard
+		// [ipgb-tester type="0" nopriv="true" ] for public facing pages
+		// [ipgb-tester type="0" nopriv="false"] for admin dashboard
 		add_shortcode( IPGB_TESTER_SLUG, array( $this, 'process_shortcode' ) );
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
@@ -168,11 +168,14 @@ class IPGB_Tester_Public {
 
 		switch ( $atts['type'] ) {
 		  case 0:
+			// ajax request on post page
 			$act = $this->get_ajax_action( 'true' === $atts['nopriv'] );
 			$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
 			return '<a href="' . $url . '" title="' . $url . '">' . $url . '</a>';
 			break;
+
 		  case 1:
+			// direct request to plugin area on post page
 			$home = esc_url( site_url() );
 			$link = <<<EOT
 <ol>

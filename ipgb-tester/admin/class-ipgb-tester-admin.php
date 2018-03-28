@@ -162,7 +162,7 @@ class IPGB_Tester_Admin {
 			IPGB_TESTER_SLUG,
 			array( $this, 'render_admin_page' )
 		);
- 
+
 		// If successful, load admin assets only on this page.
 		if ( ! empty( $hook ) ) {
 			add_action( "load-$hook", array( $this, 'enqueue_admin_assets' ) );
@@ -210,57 +210,58 @@ class IPGB_Tester_Admin {
 			$option_slug
 		);
 
-		$link = array(
-			'<a                            class="button button-secondary" onClick="alert(1)">&lt;a onclick="&ctdot;"&gt;</a>',
-			'<a href=""                    class="button button-secondary" onClick="alert(1)">&lt;a href=""  onClick="&ctdot;"&gt;</a>',
-			'<a href="?"                   class="button button-secondary" onClick="alert(1)">&lt;a href="?" onClick="&ctdot;"&gt;</a>',
-			'<a href="#"                   class="button button-secondary" onClick="alert(1)">&lt;a href="#" onClick="&ctdot;"&gt;</a>',
-			'<a href="javascript:alert(2)" class="button button-secondary" onClick="alert(1)">&lt;a href="javascript:&ctdot;" onClick="&ctdot;"&gt;</a>',
-			'<a href="//example.com/"      class="button button-secondary">&lt;a href="//:example.com/"&gt;</a>',
-			'<a href="//example.com/"      class="button button-secondary" onClick="return window.confirm(\'Ready?\')">&lt;a href="//:example.com/" onClick="&ctdot;"&gt;</a>',
-		);
-		$form = array(
-			'<form method="GET"  action=""><input class="button button-secondary" value="&lt;form method=&quot;GET&quot;  action=&quot;&quot;&gt;" type="submit" /></form>',
-			'<form method="POST" action=""><input class="button button-secondary" value="&lt;form method=&quot;POST&quot; action=&quot;&quot;&gt;" type="submit" /></form>',
-			'<form method="GET">           <input class="button button-secondary" value="&lt;form method=&quot;GET&quot;&gt;"                      type="submit" /></form>',
-			'<form method="POST">          <input class="button button-secondary" value="&lt;form method=&quot;POST&quot;&gt;"                     type="submit" /></form>',
+		$external = '//www.ipgeoblock.com/codex/referer-checker.html';
+		$redirect = add_query_arg( 'page', 'ipgb-tester', admin_url( 'options-general.php' ) );
+		$redirect = add_query_arg( array(
+			'action' => 'logout',
+			'redirect_to' => urlencode( $redirect ),
+		), wp_logout_url() );
+
+		$patterns = array(
+			'Ancor tag on admin dashboard' => array(
+				'<a                            class="button button-secondary" onClick="alert(1)">&lt;a onclick="&ctdot;"&gt;</a>',
+				'<a href=""                    class="button button-secondary" onClick="alert(1)">&lt;a href="" onClick="&ctdot;"&gt;</a>',
+				'<a href="?"                   class="button button-secondary" onClick="alert(1)">&lt;a href="?" onClick="&ctdot;"&gt;</a>',
+				'<a href="#"                   class="button button-secondary" onClick="alert(1)">&lt;a href="#" onClick="&ctdot;"&gt;</a>',
+				'<a href="../"                 class="button button-secondary" onClick="alert(1)">&lt;a href="../" onClick="&ctdot;"&gt;</a>',
+				'<a href="javascript:alert(2)" class="button button-secondary" onClick="alert(1)">&lt;a href="javascript:&ctdot;" onClick="&ctdot;"&gt;</a>',
+				'<a href="' . $external . '"   class="button button-secondary">&lt;a href="//:example.com/"&gt;</a>',
+				'<a href="' . $external . '"   class="button button-secondary" onClick="return window.confirm(\'Ready?\')">&lt;a href="//:example.com/" onClick="&ctdot;"&gt;</a>',
+				'<a href="' . $redirect . '"   class="button button-secondary">Logout with redirection after login</a>',
+			),
+			'Form tag on admin dashboard' => array(
+				'<form method="GET"  action=""><input class="button button-secondary" value="&lt;form method=&quot;GET&quot;  action=&quot;&quot;&gt;" type="submit" /></form>',
+				'<form method="POST" action=""><input class="button button-secondary" value="&lt;form method=&quot;POST&quot; action=&quot;&quot;&gt;" type="submit" /></form>',
+				'<form method="GET">           <input class="button button-secondary" value="&lt;form method=&quot;GET&quot;&gt;"                      type="submit" /></form>',
+				'<form method="POST">          <input class="button button-secondary" value="&lt;form method=&quot;POST&quot;&gt;"                     type="submit" /></form>',
+			),
+			'Shortcode on post page' => array(
+				'<code>[ipgb-tester type="0" nopriv="true" ]</code> ... ajax request for non logged-in user',
+				'<code>[ipgb-tester type="0" nopriv="false"]</code> ... ajax request for logged-in user',
+				'<code>[ipgb-tester type="1"]</code> ... direct request to plugin area for logged-in user',
+			),
 		);
 
-		$pattern = '<ol>';
-		foreach ( $link as $val ) {
-			$pattern .= '<li>' . $val . '</li>';
+		foreach ( $patterns as $name => $pattern ) {
+			$html = '<ol>';
+			foreach ( $pattern as $val ) {
+				$html .= '<li>' . $val . '</li>';
+			}
+			$html .= '</ol>';
+
+			add_settings_field(
+				$option_name . '-' . $name,
+				$name,
+				array( $this, 'render_field' ),
+				$option_slug,
+				$section,
+				array(
+					'type'   => 'html',
+					'value'  => $html,
+				)
+			);
 		}
-		$pattern .= '</ol>';
 
-		add_settings_field(
-			$option_name . '-link',
-			'Anchor tag',
-			array( $this, 'render_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type'   => 'html',
-				'value'  => $pattern,
-			)
-		);
-
-		$pattern = '<ol>';
-		foreach ( $form as $val ) {
-			$pattern .= '<li>' . $val . '</li>';
-		}
-		$pattern .= '</ol>';
-
-		add_settings_field(
-			$option_name . '-form',
-			'Form tag',
-			array( $this, 'render_field' ),
-			$option_slug,
-			$section,
-			array(
-				'type'   => 'html',
-				'value'  => $pattern,
-			)
-		);
 	}
 
 	/**
