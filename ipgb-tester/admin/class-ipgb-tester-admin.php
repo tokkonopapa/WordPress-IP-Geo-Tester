@@ -235,6 +235,9 @@ class IPGB_Tester_Admin {
 				'<form method="GET">           <input class="button button-secondary" value="&lt;form method=&quot;GET&quot;&gt;"                      type="submit" /></form>',
 				'<form method="POST">          <input class="button button-secondary" value="&lt;form method=&quot;POST&quot;&gt;"                     type="submit" /></form>',
 			),
+			'No follow with a specific action' => array(
+				'<a href="?action=x" class="button button-secondary" rel="nofollow">&lt;a href="?action=&ctdot;" rel="nofollow"&gt;</a>',
+			),
 			'Shortcode on post page' => array(
 				'<code>[ipgb-tester type="0" nopriv="true" ]</code> ... ajax request for non logged-in user',
 				'<code>[ipgb-tester type="0" nopriv="false"]</code> ... ajax request for logged-in user',
