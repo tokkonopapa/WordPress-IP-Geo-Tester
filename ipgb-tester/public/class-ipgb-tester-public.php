@@ -167,28 +167,38 @@ class IPGB_Tester_Public {
 		), $atts );
 
 		switch ( $atts['type'] ) {
-		  case 0:
+		  case 'admin-ajax':
+			$link = "<ol>\n";
 			// ajax request on post page
-			$act = $this->get_ajax_action( 'true' === $atts['nopriv'] );
-			$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
-			return '<a href="' . $url . '" title="' . $url . '">' . $url . '</a>';
+			foreach ( array( TRUE, FALSE ) as $nopriv ) {
+				$act = $this->get_ajax_action( $nopriv );
+				$url = esc_url( admin_url( 'admin-ajax.php?action=' . $act ) );
+				$link .= '<li><a href="' . $url . '" title="' . $url . '">' . $url . "</a></li>\n";
+			}
+			$link .= "</ol>\n";
+			return $link;
 			break;
 
-		  case 1:
+		  case 'follow':
+		  case 'nofollow':
+			$follow = 'nofollow' === $atts['type'] ? ' rel="nofollow"' : '';
 			// direct request to plugin area on post page
 			$home = esc_url( site_url() );
 			$link = <<<EOT
 <ol>
-    <li><a href="${home}/wp-admin/admin-ajax.php?action=my-ajax">/wp-admin/admin-ajax-php?action=my-ajax</a>
-    <li><a href="${home}/wp-admin/admin-ajax.php?action=my-ajax&file=../../../wp-config.php">/wp-admin/admin-ajax-php?action=my-ajax&file=../../../wp-config.php</a></li>
-    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php">/wp-content/plugins/ip-geo-block/samples.php</a></li>
-    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php?file=../../../wp-config.php">/wp-content/plugins/ip-geo-block/samples.php?file=../../../wp-config.php</a></li>
-    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php?wp-load=1">/wp-content/plugins/ip-geo-block/samples.php?wp-load=1</a></li>
-    <li><a href="${home}/wp-content/plugins/ip-geo-block/samples.php?wp-load=1&file=../../../wp-config.php">/wp-content/plugins/ip-geo-block/samples.php?wp-load=1&file=../../../wp-config.php</a></li>
+    <li><a${follow} href="${home}/wp-admin/admin-ajax.php?action=my-ajax">/wp-admin/admin-ajax-php?action=my-ajax</a>
+    <li><a${follow} href="${home}/wp-admin/admin-ajax.php?action=my-ajax&file=../../../wp-config.php">/wp-admin/admin-ajax-php?action=my-ajax&file=../../../wp-config.php</a></li>
+    <li><a${follow} href="${home}/wp-content/plugins/ip-geo-block/samples.php">/wp-content/plugins/ip-geo-block/samples.php</a></li>
+    <li><a${follow} href="${home}/wp-content/plugins/ip-geo-block/samples.php?file=../../../wp-config.php">/wp-content/plugins/ip-geo-block/samples.php?file=../../../wp-config.php</a></li>
+    <li><a${follow} href="${home}/wp-content/plugins/ip-geo-block/samples.php?wp-load=1">/wp-content/plugins/ip-geo-block/samples.php?wp-load=1</a></li>
+    <li><a${follow} href="${home}/wp-content/plugins/ip-geo-block/samples.php?wp-load=1&file=../../../wp-config.php">/wp-content/plugins/ip-geo-block/samples.php?wp-load=1&file=../../../wp-config.php</a></li>
 </ol>
 EOT;
 			return $link;
 			break;
+
+		  default:
+			return NULL;
 		}
 	}
 

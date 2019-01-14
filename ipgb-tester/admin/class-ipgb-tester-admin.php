@@ -239,9 +239,9 @@ class IPGB_Tester_Admin {
 				'<a href="?action=x" class="button button-secondary" rel="nofollow">&lt;a href="?action=&ctdot;" rel="nofollow"&gt;</a>',
 			),
 			'Shortcode on post page' => array(
-				'<code>[ipgb-tester type="0" nopriv="true" ]</code> ... ajax request for non logged-in user',
-				'<code>[ipgb-tester type="0" nopriv="false"]</code> ... ajax request for logged-in user',
-				'<code>[ipgb-tester type="1"]</code> ... direct request to plugin area for logged-in user',
+				'<h5>admin-ajax</h5>    <code>[ipgb-tester type="admin-ajax"]</code>',
+				'<h5>rel="nofollow"</h5><code>[ipgb-tester type="nofollow"]</code>',
+				'<h5>rel="follow"</h5>  <code>[ipgb-tester type="follow"]</code>',
 			),
 		);
 
@@ -264,7 +264,6 @@ class IPGB_Tester_Admin {
 				)
 			);
 		}
-
 	}
 
 	/**
